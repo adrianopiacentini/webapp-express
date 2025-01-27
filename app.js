@@ -1,9 +1,15 @@
 const express = require('express');
 const moviesRouter = require('./routers/movies')
+const cors = require('cors')
 // EXPRESS SETUP
 const app = express();
 const port = process.env.SERVER_PORT;
 
+
+// CORS
+app.use(cors({
+    origin: 'http://localhost:5173'
+}))
 // DEFINING ROUTES GROUPS
 app.use('/movies', moviesRouter)
 
