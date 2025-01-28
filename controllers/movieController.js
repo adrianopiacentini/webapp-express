@@ -1,9 +1,20 @@
 const dbConnection = require('../data/dbConnection')
 
 const index = (req, res) => {
-    const sql = "SELECT * FROM movies"
+    const filters = req.query
+    console.log(filters)
 
-    dbConnection.query(sql, (err, movies) => {
+    let sql = `SELECT * FROM movies`
+    const params = []
+
+    if (filters.search) {
+        sql += `
+        WHERE title LIKE ?
+        `
+        params.push(`%${filters.search}%`)
+    } 
+
+    dbConnection.query(sql, params, (err, movies) => {
         if (err) {
             const resObj = {
                 status: 'Fail',
@@ -21,6 +32,8 @@ const index = (req, res) => {
             data: movies,
         })
     });
+
+
 };
 
 const show = (req, res) => {
@@ -50,7 +63,7 @@ const show = (req, res) => {
         if (results.length === 0) {
             return res.status(404).json({
                 status: 'Fail',
-                message: 'Libro non trovato',
+                message: 'Film non trovato',
             })
         }
 
