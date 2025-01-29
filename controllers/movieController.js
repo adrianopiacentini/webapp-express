@@ -2,7 +2,7 @@ const dbConnection = require('../data/dbConnection')
 
 const index = (req, res) => {
     const filters = req.query
-    console.log(filters)
+    // console.log(filters)
 
     let sql = `SELECT * FROM movies`
     const params = []
