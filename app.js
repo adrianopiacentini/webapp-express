@@ -8,7 +8,7 @@ const port = process.env.SERVER_PORT;
 
 // CORS
 app.use(cors({
-    origin: 'http://localhost:5173'
+    origin: process.env.FRONTEND_URL
 }))
 // DEFINING ROUTES GROUPS
 app.use('/movies', moviesRouter)

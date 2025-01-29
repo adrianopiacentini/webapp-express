@@ -42,7 +42,7 @@ const show = (req, res) => {
     const sql = `
     SELECT movies.*, CAST(AVG(reviews.vote) as FLOAT) as vote_avg
     FROM movies
-    JOIN reviews
+    LEFT JOIN reviews
     ON reviews.movie_id = movies.id
     WHERE movies.id = ?
     `
@@ -68,7 +68,7 @@ const show = (req, res) => {
             return res.status(500).json(resObj)
         }
 
-        if (results.length === 0) {
+        if (results.length === 0 || results[0].id === null) {
             return res.status(404).json({
                 status: 'Fail',
                 message: 'Film non trovato',
