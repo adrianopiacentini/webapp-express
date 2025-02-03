@@ -141,8 +141,88 @@ const releaseYear = (req, res) => {
     })
 }
 
+
+
+const storeReview = (req, res, next) => {
+    const movieId = req.params.id;
+    const { name, vote, text } = req.body;
+    // console.log(name, vote, text, movieId);
+
+    if (isNaN(vote) || vote < 0 || vote > 5) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: 'Vote must be a number between 0 and 5'
+        })
+    }
+
+    if (name.length < 3 || name.length > 12) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: 'Name must be between 3 and 12 characters'
+        })
+    }
+
+    if (text && text.length > 0 && text.length < 5) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: 'Review text must be at least 5 characters long'
+        })
+    }
+
+    const movieSql = `
+      SELECT *
+      FROM movies
+      WHERE id = ?
+    `
+
+    dbConnection.query(movieSql, [movieId], (err, results) => {
+        if (err) {
+            const resObj = {
+                status: 'Fail',
+                message: 'Internal server error'
+            }
+            if (process.env.ENVIRONMENT === 'development') {
+                resObj.detail = err.stack;
+            }
+
+            return res.status(500).json(resObj)
+        }
+        if (results.length === 0) {
+            return res.status(404).json({
+                status: 'Fail',
+                message: 'Movie not found',
+            });
+        }
+
+        const sql = `
+      INSERT INTO reviews(movie_id, name, vote, text)
+      VALUES (?, ?, ?, ?);
+    `
+
+        dbConnection.query(sql, [movieId, name, vote, text], (err, results) => {
+            if (err) {
+                const resObj = {
+                    status: 'Fail',
+                    message: 'Internal server error'
+                }
+                if (process.env.ENVIRONMENT === 'development') {
+                    resObj.detail = err.stack;
+                }
+
+                return res.status(500).json(resObj)
+            }
+
+            res.status(201).json({
+                status: 'Success',
+                message: 'Review added',
+            })
+        })
+    })
+}
+
 module.exports = {
     index,
     show,
-    releaseYear
+    releaseYear,
+    storeReview
 };

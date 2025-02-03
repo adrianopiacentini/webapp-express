@@ -5,6 +5,8 @@ const cors = require('cors')
 const app = express();
 const port = process.env.SERVER_PORT;
 
+app.use(express.json())
+
 app.use(express.static('public'))
 // CORS
 app.use(cors({
